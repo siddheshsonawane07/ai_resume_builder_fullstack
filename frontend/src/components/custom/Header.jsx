@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom"
 import { Button } from "../ui/button"
-import { UserButton, useUser } from "@clerk/clerk-react"
+// import { UserButton, useUser } from "@clerk/clerk-react"
 
 
 
 const Header = () => {
-    const {isSignedIn} = useUser();
+  // clerk alternative siddu
+    const {isSignedIn} = true;
   return (
     <div className="p-3 px-5 flex justify-between shadow-sm">
         <Link to='/'>
@@ -17,7 +18,7 @@ const Header = () => {
         {isSignedIn?
             <div className="flex gap-4 items-center">
                 <Link to={'/dashboard'}><Button variant={'outline'}>Dashboard</Button></Link>
-                <UserButton/>
+                
             </div>
             : 
         <Link to={'/auth/sign-in'}><Button>Get Started</Button></Link>

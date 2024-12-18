@@ -1,13 +1,17 @@
-import { useUser } from "@clerk/clerk-react"
+/* eslint-disable no-unused-vars */
+// import { useUser } from "@clerk/clerk-react"
 import AddResume from "./components/AddResume"
 import GlobalApi from "../../service/GlobalApi";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ResumeItem from "./components/ResumeItem";
+import { UserContext } from "@/context/UserContext";
 
 
 const Dashboard = () => {
-  const {user} = useUser();
+  const {userInfo, setUserInfo} = useContext(UserContext);
+  console.log(userInfo);
   const [resumeList,setResumeList] = useState([]);
+  const user = "something";
   useEffect(()=>{
     user && GetResumesList();
   },[user])

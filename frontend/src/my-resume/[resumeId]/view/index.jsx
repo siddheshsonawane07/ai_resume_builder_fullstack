@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Header from "@/components/custom/Header";
 import { Button } from "@/components/ui/button";
 import { ResumeContext } from "@/context/ResumeContext";

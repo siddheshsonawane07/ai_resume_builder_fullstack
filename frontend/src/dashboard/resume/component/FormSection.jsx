@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Button } from "@/components/ui/button"
 import PersonalDetailForm from "./form/PersonalDetailForm"
 import { ArrowLeft, ArrowRight, Home } from "lucide-react"

@@ -4,7 +4,6 @@
   "description": "backend for ai resume builder",
   "main": "index.js",
   "type": "module",
-
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,6 +12,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "firebase-admin": "^13.0.1",
     "nodemon": "^3.1.9"
   }
 }
