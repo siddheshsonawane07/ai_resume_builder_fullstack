@@ -1,38 +1,54 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import "./index.css";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import App from "./App.jsx";
+import Home from "./home/index.jsx";
+import Dashboard from "./dashboard/index.jsx";
+import LoginSignup from "./auth/sign-in/index.jsx";
+import ProtectedRoute from "./utils/ProtectedRoute.jsx";
+import "./index.css"
 
-// Import all pages
-import App from "./App";
-import SignInPage from "./auth/sign-in/index"
-import Dashboard from "./dashboard/index";
-import Home from "./home/index";
 
-// Create router with protected and public routes
 const router = createBrowserRouter([
   {
-    path: "/",
     element: <App />,
     children: [
       {
+        path: "/",
+        element: <Home />,
         index: true,
-        element: <Home />
       },
       {
-        path: "auth/sign-in",
-        element: <SignInPage />
+        path: "/register",
+        element: <LoginSignup />,
       },
       {
-        path: "dashboard",
-        element: <Dashboard />
-      }
-    ]
-  }
+        element: <ProtectedRoute />, 
+        children: [
+          {
+            path: "/dashboard",
+            element: (
+                <Dashboard />
+            ),
+          },
+          {
+            path: "/edit-resume",
+            element: (
+              <Dashboard />
+            ),
+          },
+          {
+            path: "/view-resume",
+            element: (
+              <Dashboard />
+            ),
+          },
+        ],
+      },
+    ],
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>
+  <RouterProvider router={router} />
 );

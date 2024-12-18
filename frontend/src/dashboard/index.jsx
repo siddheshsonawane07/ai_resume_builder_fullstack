@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-// import { useUser } from "@clerk/clerk-react"
+
 import AddResume from "./components/AddResume"
 import GlobalApi from "../../service/GlobalApi";
 import { useContext, useEffect, useState } from "react";
