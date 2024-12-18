@@ -1,7 +1,5 @@
-/* eslint-disable no-unused-vars */
 import Header from "@/components/custom/Header";
 import { AtomIcon, Edit, Share2 } from "lucide-react";
-// import { UserButton } from "@clerk/clerk-react"
 
 const Home = () => {
   return (

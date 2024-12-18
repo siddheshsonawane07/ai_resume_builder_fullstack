@@ -1,34 +1,26 @@
-/* eslint-disable no-unused-vars */
-import { Navigate, Outlet } from 'react-router-dom'
-import './App.css'
-import Header from './components/custom/Header';
-import { Toaster } from './components/ui/sonner';
-import { UserContext } from './context/UserContext';
-import { useState } from 'react';
+import React from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
+import { useUser } from './context/UserContext';
+import { UserProvider } from './context/UserContext';
 
+// Protected Route Wrapper
+const ProtectedRoute = () => {
+  const { user } = useUser();
 
-function App() {
-  // eslint-disable-next-line no-unused-vars
-  const [userInfo, setUserInfo] = useState([]);
-  
-  
-  
-  console.log(userInfo);
-  if(userInfo){
-    return <Navigate to={'/auth/sign-in'}/>
+  if (!user) {
+    return <Navigate to="/auth/sign-in" replace />;
   }
 
+  return <Outlet />;
+};
+
+// Main App Component
+function App() {
   return (
-    <>
-    <UserContext.Provider value={{userInfo,setUserInfo}}>
-    
-      <Header/>
-      <Outlet/>
-      <Toaster/>
-    </UserContext.Provider>
-    
-    </>
-  )
+    <UserProvider>
+      <Outlet />
+    </UserProvider>
+  );
 }
 
-export default App
+export default App;

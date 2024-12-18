@@ -10,34 +10,30 @@
 //   )
 // }
 
-import { useContext, useRef, useState } from "react";
-import {auth} from "../../utils/firebase_config"
-
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  updateProfile,
-} from "firebase/auth";
+import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "@/context/UserContext";
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  GoogleAuthProvider, 
+  signInWithPopup 
+} from "firebase/auth";
+import { auth } from "../../utils/firebase_config";
+import { useUser } from "../../context/UserContext";
 
 const SignInPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
-  const nameRef = useRef(null); 
+  const nameRef = useRef(null);
   const navigate = useNavigate();
-  const {userInfo, setUserInfo} = useContext(UserContext)
-
+  const { login } = useUser();
 
   const handleSignup = async (e) => {
     e.preventDefault();
 
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
-    const displayName = nameRef.current.value;
 
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -47,21 +43,11 @@ const SignInPage = () => {
       );
       const user = userCredential.user;
 
-      // Update profile with displayName
-      await updateProfile(user, { displayName });
-
-      // const { uid, photoURL } = user;
-
-      setUserInfo(
-        ...userInfo,
-        user,
-      );
-
-      // dispatch(loginSuccess({ uid, displayName, email, photoURL }));
-
+      login(user);
       navigate("/dashboard");
     } catch (error) {
-      console.log("Error: ", error.message);
+      console.error("Signup Error: ", error.message);
+      alert(error.message);
     }
   };
 
@@ -78,13 +64,12 @@ const SignInPage = () => {
         password
       );
       const user = userCredential.user;
-      // const { uid, displayName, photoURL } = user;
 
-      // dispatch(loginSuccess({ uid, displayName, email, photoURL }));
-      // navigate("/home");
-      alert("handle login button")
+      login(user);
+      navigate("/dashboard");
     } catch (error) {
-      console.log("Error: ", error.message);
+      console.error("Login Error: ", error.message);
+      alert(error.message);
     }
   };
 
@@ -92,34 +77,29 @@ const SignInPage = () => {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      const { uid, displayName, email, photoURL } = result.user;
+      const user = result.user;
 
-      // dispatch(loginSuccess({ uid, displayName, email, photoURL }));
-      alert("handle google sign in button")
+      login(user);
+      navigate("/dashboard");
     } catch (error) {
-      console.error("Error signing in with Google:", error);
+      console.error("Google Sign-In Error:", error);
+      alert(error.message);
     }
   };
 
   return (
     <div className="login-signup-container">
-      <h2 className="login-signup-title">{isLogin ? "Login" : "Signup"}</h2>
-      <form
-        className="login-signup-form"
-        onSubmit={isLogin ? handleLogin : handleSignup}
-      >
-        <label className="login-signup-label">Email Id</label>
+      <h2>{isLogin ? "Login" : "Signup"}</h2>
+      
+      <form onSubmit={isLogin ? handleLogin : handleSignup}>
         <input
-          className="login-signup-input"
           type="email"
           ref={emailRef}
           placeholder="Email"
           required
         />
 
-        <label className="login-signup-label">Password</label>
         <input
-          className="login-signup-input"
           type="password"
           ref={passwordRef}
           placeholder="Password"
@@ -127,36 +107,28 @@ const SignInPage = () => {
         />
 
         {!isLogin && (
-          <>
-            <label className="login-signup-label">Name</label>
-            <input
-              className="login-signup-input"
-              type="text"
-              ref={nameRef}
-              placeholder="Name"
-              required
-            />
-          </>
+          <input
+            type="text"
+            ref={nameRef}
+            placeholder="Name"
+            required
+          />
         )}
 
-        <button className="login-signup-button" type="submit">
+        <button type="submit">
           {isLogin ? "Login" : "Sign Up"}
         </button>
       </form>
 
-      <button
-        className="login-signup-switch"
-        onClick={() => setIsLogin(!isLogin)}
-      >
+      <button onClick={() => setIsLogin(!isLogin)}>
         {isLogin ? "Switch to Signup" : "Switch to Login"}
       </button>
 
-      <button className="login-signup-google" onClick={handleGoogleSignIn}>
-        <span className="login-signup-google-icon">G</span> Sign in with Google
+      <button onClick={handleGoogleSignIn}>
+        Sign in with Google
       </button>
     </div>
   );
 };
 
 export default SignInPage;
-
