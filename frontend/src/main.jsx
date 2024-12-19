@@ -6,6 +6,7 @@ import Home from "./home/index.jsx";
 import Dashboard from "./dashboard/index.jsx";
 import LoginSignup from "./auth/sign-in/index.jsx";
 import ProtectedRoute from "./utils/ProtectedRoute.jsx";
+import ResumeEditor from "./dashboard/components/ResumeItem.jsx"; 
 import "./index.css";
 
 const router = createBrowserRouter([
@@ -28,15 +29,13 @@ const router = createBrowserRouter([
             path: "/dashboard",
             element: <Dashboard />,
           },
-
           {
-            path: "/dashboard/:uuid/resume/:resumeId/edit",
-            element: <Dashboard />,
+            path: "/dashboard/:uid/resume/:resumeId/edit",
+            element: <ResumeEditor />,
           },
-
           {
-            path: "/view-resume",
-            element: <Dashboard />,
+            path: "/dashboard/:uid/resume/:resumeId/view",
+            element: <ResumeEditor />,
           },
         ],
       },
