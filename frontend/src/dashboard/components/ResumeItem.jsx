@@ -1,6 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
-
 import {
   AlertDialogFooter,
   AlertDialogHeader,
@@ -18,49 +15,53 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Loader2Icon, MoreVertical, Notebook } from "lucide-react";
-import { useState } from "react";
+import { Loader2Icon, MoreVertical } from "lucide-react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import GlobalApi from "../../../service/GlobalApi";
 import { toast } from "sonner";
+import { getFirestore, doc, deleteDoc } from "firebase/firestore";
+import { UserContext } from "@/context/UserContext";
 
 const ResumeItem = ({ resume, refreshData }) => {
-  const navigation = useNavigate();
+  const navigate = useNavigate();
+  const { user } = useContext(UserContext); // Fetching user from context
   const [openAlert, setOpenAlert] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const onDelete = () => {
+  const onDelete = async () => {
+    if (!user?.uid) {
+      console.error("User is not authenticated.");
+      return;
+    }
+
     setLoading(true);
-    GlobalApi.DeleteResumeById(resume.resumeId).then(
-      (resp) => {
-        console.log(resp);
-        toast.success("Resume Deleted!");
-        refreshData();
-        setLoading(false);
-        setOpenAlert(false);
-      },
-      (error) => {
-        setLoading(false);
-      }
-    );
+
+    try {
+      const db = getFirestore();
+      const resumeRef = doc(getFirestore(), "users", user.uid, "resumes", resume.id);
+      await deleteDoc(resumeRef);
+
+      toast.success("Resume Deleted!");
+      refreshData(); 
+    } catch (error) {
+      console.error("Error deleting resume:", error);
+      toast.error("Failed to delete resume.");
+    } finally {
+      setLoading(false);
+      setOpenAlert(false);
+    }
   };
+
   return (
-    <div className="">
-      <Link to={"/dashboard/resume/" + resume.resumeId + "/edit"}>
+    <div>
+      <Link to={`/dashboard/${user.uid}/${resume.resumeId}/edit`}>
         <div
-          className="p-14  bg-gradient-to-bl from-slate-300 to-slate-50
-  h-[280px] 
-    rounded-t-lg border-t-4
-  "
+          className="p-14 bg-gradient-to-bl from-slate-300 to-slate-50 h-[280px] rounded-t-lg border-t-4"
           style={{
             borderColor: "rgb(76, 135, 255)",
           }}
         >
-          <div
-            className="flex 
-  items-center justify-center h-[180px] "
-          >
-            {/* <Notebook/> */}
+          <div className="flex items-center justify-center h-[180px]">
             <img
               src="/src/assets/3d-cv-resume-icon_165488-4908-removebg-preview.png"
               width={400}
@@ -71,12 +72,12 @@ const ResumeItem = ({ resume, refreshData }) => {
         </div>
       </Link>
       <div
-        className="border p-3 flex justify-between  text-white rounded-b-lg shadow-lg"
+        className="border p-3 flex justify-between text-white rounded-b-lg shadow-lg"
         style={{
           background: "rgb(76, 135, 255)",
         }}
       >
-        <h2 className="text-sm">{resume.title}</h2>
+        <h2 className="text-sm">{resume.id}</h2>
 
         <DropdownMenu>
           <DropdownMenuTrigger>
@@ -84,23 +85,17 @@ const ResumeItem = ({ resume, refreshData }) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem
-              onClick={() =>
-                navigation("/dashboard/resume/" + resume.resumeId + "/edit")
-              }
+              onClick={() => navigate(`/dashboard/${user.uid}/${resume.resumeId}/edit`)}
             >
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() =>
-                navigation("/my-resume/" + resume.resumeId + "/view")
-              }
+              onClick={() => navigate(`/dashboard/${user.uid}/${resume.resumeId}/view`)}
             >
               View
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() =>
-                navigation("/my-resume/" + resume.resumeId + "/view")
-              }
+              onClick={() => navigate(`/dashboard/${user.uid}/${resume.resumeId}/view`)}
             >
               Download
             </DropdownMenuItem>

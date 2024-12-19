@@ -9,12 +9,11 @@ import {
 import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "@/context/UserContext";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc,collection,query, orderBy, limit,getDocs } from "firebase/firestore";
 
-const AddResume = () => {
+const AddResume = ({ refreshData }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [resumeTitle, setResumeTitle] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,32 +22,35 @@ const AddResume = () => {
   const db = getFirestore();
 
   const onCreate = async () => {
-    if (!user) {
+    if (!user?.uid) {
       console.error("User is not authenticated.");
       return;
     }
 
     setLoading(true);
-    const resumeId = uuidv4();
-    const data = {
-      title: resumeTitle,
-      resumeId: resumeId,
-      userEmail: user?.email,
-      userName: user?.name || "Anonymous",
-    };
-
     try {
-      // Save data to Firestore
-      const docRef = await addDoc(collection(db, "resumes"), data);
-      console.log("Document written with ID:", docRef.id);
-
-      setLoading(false);
-      setOpenDialog(false);
-
-      // Navigate to the edit resume page
-      navigate(`/dashboard/${user.email}/resume/${resumeId}/edit`);
+      const db = getFirestore();
+      const resumesRef = collection(db, "usersByEmail", user.email, "resumes");
+  
+      // Query to get the highest resumeId
+      const q = query(resumesRef, orderBy("resumeId", "desc"), limit(1));
+      const querySnapshot = await getDocs(q);
+  
+      let newResumeId = 1; // Default to 1 if no resumes exist
+      if (!querySnapshot.empty) {
+        const lastResume = querySnapshot.docs[0].data();
+        newResumeId = (lastResume.resumeId || 0) + 1;
+      }
+  
+      // Create a new resume document
+      const resumeDocRef = doc(resumesRef, `resume-${newResumeId}`);
+      // await setDoc(resumeDocRef, { ...resumeData, resumeId: newResumeId });
+      await setDoc(resumeDocRef, { resumeId: newResumeId });
+      navigate('/dashboard')
+      console.log("Resume created successfully!");
     } catch (error) {
-      console.error("Error adding document:", error);
+      console.error("Error creating resume:", error);
+    } finally {
       setLoading(false);
     }
   };
