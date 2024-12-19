@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 import { Loader2, PlusSquare } from "lucide-react";
 import {
   Dialog,
@@ -8,57 +6,62 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { v4 as uuidv4 } from "uuid";
-import GlobalApi from "../../../service/GlobalApi";
-// import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "@/context/UserContext";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 
 const AddResume = () => {
   const [openDialog, setOpenDialog] = useState(false);
-  const [resumeTitle, setResumeTitle] = useState();
-  const user = 1;
+  const [resumeTitle, setResumeTitle] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigate();
-  console.log(user?.user?.primaryEmailAddress?.emailAddress);
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
+  const db = getFirestore();
 
   const onCreate = async () => {
-    setLoading(true);
-    const uuid = uuidv4();
-    const data = {
-      data: {
-        title: resumeTitle,
-        resumeId: uuid,
-        userEmail: user?.user?.primaryEmailAddress?.emailAddress,
-        userName: user?.user?.fullName,
-      },
-    };
- 
-    console.log("Data to be sent:", data); 
+    if (!user) {
+      console.error("User is not authenticated.");
+      return;
+    }
 
-    GlobalApi.CreateNewResume(data).then((resp) => {
-      console.log("Response:", resp);
-      if (resp) {
-        setLoading(false);
-        navigation('/dashboard/resume/'+resp.data.data.attributes.resumeId+'/edit')
-      }
-    }, (error) => {
-      console.log("Error:", error); 
+    setLoading(true);
+    const resumeId = uuidv4();
+    const data = {
+      title: resumeTitle,
+      resumeId: resumeId,
+      userEmail: user?.email,
+      userName: user?.name || "Anonymous",
+    };
+
+    try {
+      // Save data to Firestore
+      const docRef = await addDoc(collection(db, "resumes"), data);
+      console.log("Document written with ID:", docRef.id);
+
       setLoading(false);
-    });
+      setOpenDialog(false);
+
+      // Navigate to the edit resume page
+      navigate(`/dashboard/${user.email}/resume/${resumeId}/edit`);
+    } catch (error) {
+      console.error("Error adding document:", error);
+      setLoading(false);
+    }
   };
 
   return (
     <div>
       <div
-        className="p-14 py-24 border flex items-center  justify-center bg-secondary rounded-lg h-[280px] hover:scale-105 transition-all hover:shadow-sm cursor-pointer border-dashed border-black"
+        className="p-14 py-24 border flex items-center justify-center bg-secondary rounded-lg h-[280px] hover:scale-105 transition-all hover:shadow-sm cursor-pointer border-dashed border-black"
         onClick={() => setOpenDialog(true)}
       >
         <PlusSquare />
       </div>
-      <Dialog open={openDialog}>
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create New Resume</DialogTitle>
@@ -75,7 +78,7 @@ const AddResume = () => {
                 Cancel
               </Button>
               <Button disabled={!resumeTitle || loading} onClick={onCreate}>
-                {loading ? <Loader2 className="animate-spin" /> : 'Create'}
+                {loading ? <Loader2 className="animate-spin" /> : "Create"}
               </Button>
             </div>
           </DialogHeader>

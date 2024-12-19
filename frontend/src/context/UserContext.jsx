@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
-// Create the context with an explicit export
 export const UserContext = createContext(null);
 
 // Provider component
