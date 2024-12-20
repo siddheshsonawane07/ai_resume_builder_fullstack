@@ -1,22 +1,18 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ResumeContext } from "@/context/ResumeContext";
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import GlobalApi from "../../../../../service/GlobalApi";
 import { toast } from "sonner";
 import { Brain, Loader2 } from "lucide-react";
 import { AIchatSession } from "../../../../../service/AiModel";
-
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { app } from "@/utils/firebase_config";
 
 const prompt = `Given the job title "{jobTitle}", provide three job summary suggestions for a resume. Each suggestion should be in JSON format with fields "experience_level" (values can be "Fresher", "Mid-level", "Experienced") and "summary" (a brief summary). Output an array of JSON objects.`
-const SummaryForm = ({ enableNext }) => {
+const SummaryForm = ({ resumeId, email, enableNext }) => {
   const { resumeInfo, setResumeInfo } = useContext(ResumeContext);
   const [summary, setSummary] = useState();
   const [loading, setLoading] = useState(false);
-  const params = useParams();
   const [aiGeneratedSummeryList,setAiGenerateSummeryList]=useState();
 
   useEffect(() => {
@@ -41,7 +37,7 @@ const SummaryForm = ({ enableNext }) => {
   
       // Parse the response
       const parsedResponse = JSON.parse(wrappedResponse);
-      console.log('Parsed Response:', parsedResponse); // Check the structure here
+      console.log('Parsed Response:', parsedResponse); 
       setAiGenerateSummeryList(parsedResponse);
     } catch (error) {
       console.error('Error parsing response:', error);
@@ -51,25 +47,27 @@ const SummaryForm = ({ enableNext }) => {
   };
   
   
-  const onSave = (e) => {
+  const onSave = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const data = {
-      data: { summery: summary },
-    };
-    GlobalApi.UpdateResumeDetails(params?.resumeId, data).then(
-      (resp) => {
-        console.log(resp);
-        enableNext(true);
-        setLoading(false);
-        toast.success("Detail Updated");
-      },
-      (error) => {
-        setLoading(false);
-        console.log(error);
-      }
-    );
+  
+    try {
+      const db = getFirestore(app);
+      const resumeRef = doc(db, `usersByEmail/${email}/resumes`, `resume-${resumeId}`);
+      const data = { summary }; // Structure matches Firestore field
+  
+      await setDoc(resumeRef, data, { merge: true });
+  
+      enableNext(true);
+      setLoading(false);
+      toast.success("Details Updated");
+    } catch (error) {
+      setLoading(false);
+      console.error("Error updating document:", error);
+      toast.error("Failed to update details");
+    }
   };
+  
 
   const handleSuggestionClick = (summaryText) => {
     setSummary(summaryText);
