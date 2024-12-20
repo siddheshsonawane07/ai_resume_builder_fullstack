@@ -1,15 +1,12 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useContext, useEffect, useState } from "react";
 import RichTextEditor from "../RichTextEditor";
 import { ResumeContext } from "@/context/ResumeContext";
 import { toast } from "sonner";
-import GlobalApi from "../../../../../service/GlobalApi";
-import { useParams } from "react-router-dom";
 import { LoaderCircle } from "lucide-react";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { app } from "@/utils/firebase_config";
 
 const formField = {
   title: "",
@@ -20,12 +17,12 @@ const formField = {
   endDate: "",
   workSummery: "",
 };
-const ExperienceForm = ({ enableNext }) => {
+
+const ExperienceForm = ({ resumeId, email, enableNext }) => {
 
   const [experiencList, setExperiencList] = useState([formField]);
   const {resumeInfo, setResumeInfo} = useContext(ResumeContext)
   const [loading, setLoading] = useState(false);
-  const params=useParams();
 
   useEffect(()=>{
     resumeInfo&&setExperiencList(resumeInfo?.experience)
@@ -54,7 +51,6 @@ const ExperienceForm = ({ enableNext }) => {
 
   const Removexperience=()=>{
     if(experiencList.length > 1){
-
         setExperiencList(experiencList=>experiencList.slice(0,-1))
     }
   }
@@ -71,39 +67,26 @@ const ExperienceForm = ({ enableNext }) => {
     })
   },[experiencList])
 
-  const onSave = () => {
+  const onSave = async () => {
     setLoading(true);
-    
-    // Construct the payload
-    const data = {
-      data: {
-        experience: experiencList.map(({ id, ...rest }) => rest),
-      },
-    };
-  
-    // Log the payload for debugging
-    console.log('Payload data:', JSON.stringify(data, null, 2));
-  
-    // Send the PUT request
-    GlobalApi.UpdateResumeDetails(params?.resumeId, data)
-      .then((res) => {
-        setLoading(false);
-        console.log('Response:', res);
-        toast.success('Details updated!');
-      })
-      .catch((error) => {
-        setLoading(false);
-        // Log detailed error information
-        if (error.response) {
-          console.error('Error response:', error.response);
-          console.error('Error data:', error.response.data);
-        } else {
-          console.error('Error:', error);
-        }
-        toast.error('Error updating details!');
-      });
+
+    try {
+      const db = getFirestore(app);
+      const resumeRef = doc(db, `usersByEmail/${email}/resumes`, `resume-${resumeId}`);
+      const data = { experience: experiencList };
+
+      await setDoc(resumeRef, data, { merge: true });
+
+      setLoading(false);
+      toast.success("Details updated!");
+      enableNext(true);
+    } catch (error) {
+      setLoading(false);
+      console.error("Error saving to Firestore:", error);
+      toast.error("Error updating details!");
+    }
   };
-  
+
 
   return (
     <div>

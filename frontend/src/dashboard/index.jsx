@@ -19,7 +19,7 @@ const Dashboard = () => {
   const getResumesList = async () => {
     try {
       setLoading(true);
-      const db = getFirestore();
+      const db = getFirestore(app);
       const resumesRef = collection(db, "usersByEmail", user.email, "resumes");
       const querySnapshot = await getDocs(resumesRef);
 
@@ -28,8 +28,8 @@ const Dashboard = () => {
         ...doc.data(),
       }));
 
-      console.log("Resumes:", resumes);
-      setResumeList(resumes);
+      console.log("Resumes fetched from Firestore:", resumes);
+      setResumeList(resumes); 
     } catch (error) {
       console.error("Error fetching resumes: ", error);
     } finally {
@@ -47,8 +47,8 @@ const Dashboard = () => {
           <div>Loading...</div>
         ) : resumeList.length > 0 ? (
           resumeList.map((resume) => (
-            <div>
-              <ResumeItem resume={resume}   refreshData={getResumesList} />
+            <div key={resume.id}>
+              <ResumeItem resume={resume} refreshData={getResumesList} />
             </div>
           ))
         ) : (
@@ -58,4 +58,5 @@ const Dashboard = () => {
     </div>
   );
 };
+
 export default Dashboard;

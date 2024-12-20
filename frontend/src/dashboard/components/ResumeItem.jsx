@@ -24,7 +24,7 @@ import { UserContext } from "@/context/UserContext";
 
 const ResumeItem = ({ resume, refreshData }) => {
   const navigate = useNavigate();
-  const { user } = useContext(UserContext); // Fetching user from context
+  const { user } = useContext(UserContext); 
   const [openAlert, setOpenAlert] = useState(false);
   const [loading, setLoading] = useState(false);
 

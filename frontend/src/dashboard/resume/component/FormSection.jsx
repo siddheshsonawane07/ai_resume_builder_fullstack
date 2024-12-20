@@ -13,7 +13,7 @@ import ThemeColor from "./ThemeColor";
 const FormSection = () => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [enableNext, setEnableNext] = useState(true);
-  const { resumeId, email } = useParams(); // Retrieve both `resumeId` and `email` from the URL.
+  const { resumeId, email } = useParams(); 
 
   return (
     <div>

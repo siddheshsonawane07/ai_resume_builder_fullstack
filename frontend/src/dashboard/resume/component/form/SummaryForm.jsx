@@ -54,7 +54,7 @@ const SummaryForm = ({ resumeId, email, enableNext }) => {
     try {
       const db = getFirestore(app);
       const resumeRef = doc(db, `usersByEmail/${email}/resumes`, `resume-${resumeId}`);
-      const data = { summary }; // Structure matches Firestore field
+      const data = { summary }; 
   
       await setDoc(resumeRef, data, { merge: true });
   
@@ -98,7 +98,7 @@ const SummaryForm = ({ resumeId, email, enableNext }) => {
           onChange={(e) => setSummary(e.target.value)}
           value={summary}
           placeholder=""
-          defaultValue={resumeInfo.summery}
+          // defaultValue={resumeInfo.summery}
         />
         <div className="mt-2 flex justify-end">
           <Button disabled={loading} type="submit">
@@ -110,12 +110,12 @@ const SummaryForm = ({ resumeId, email, enableNext }) => {
     {aiGeneratedSummeryList && (
       <div className="my-5">
         <h2 className="font-bold text-lg">Suggestions</h2>
-        {aiGeneratedSummeryList.map((item, index) => (
+        {/* {aiGeneratedSummeryList.map((item, index) => (
           <div key={index} className="p-5 shadow-lg my-4 rounded-lg cursor-pointer" onClick={() => handleSuggestionClick(item.summary)}>
             <h2 className="font-bold my-1 text-primary">Level: <span className="text-red-500">{item.experience_level}</span> </h2>
             <p>{item.summary}</p>
           </div>
-        ))}
+        ))} */}
       </div>
     )}
     </div> 
