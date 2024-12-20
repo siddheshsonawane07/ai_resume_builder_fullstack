@@ -13,7 +13,8 @@ import ThemeColor from "./ThemeColor";
 const FormSection = () => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [enableNext, setEnableNext] = useState(true);
-  const { resumeId } = useParams();
+  const { resumeId, email } = useParams(); // Retrieve both `resumeId` and `email` from the URL.
+
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -45,18 +46,38 @@ const FormSection = () => {
           </Button>
         </div>
       </div>
-      {activeIndex == 1 ? (
-        <PersonalDetailForm enableNext={(v) => setEnableNext(v)} />
-      ) : activeIndex == 2 ? (
-        <SummaryForm enableNext={(v) => setEnableNext(v)} />
-      ) : activeIndex == 3 ? (
-        <ExperienceForm enableNext={(v) => setEnableNext(v)} />
-      ) : activeIndex == 4 ? (
-        <Education enableNext={(v) => setEnableNext(v)} />
-      ) : activeIndex == 5 ? (
-        <Skills enableNext={(v) => setEnableNext(v)} />
-      ) : activeIndex == 6 ? (
-        <Navigate to={"/my-resume/" + resumeId + "/view"} />
+      {activeIndex === 1 ? (
+        <PersonalDetailForm
+          resumeId={resumeId}
+          email={email}
+          enableNext={(v) => setEnableNext(v)}
+        />
+      ) : activeIndex === 2 ? (
+        <SummaryForm
+          resumeId={resumeId}
+          email={email}
+          enableNext={(v) => setEnableNext(v)}
+        />
+      ) : activeIndex === 3 ? (
+        <ExperienceForm
+          resumeId={resumeId}
+          email={email}
+          enableNext={(v) => setEnableNext(v)}
+        />
+      ) : activeIndex === 4 ? (
+        <Education
+          resumeId={resumeId}
+          email={email}
+          enableNext={(v) => setEnableNext(v)}
+        />
+      ) : activeIndex === 5 ? (
+        <Skills
+          resumeId={resumeId}
+          email={email}
+          enableNext={(v) => setEnableNext(v)}
+        />
+      ) : activeIndex === 6 ? (
+        <Navigate to={`/my-resume/${email}/${resumeId}/view`} />
       ) : null}
     </div>
   );

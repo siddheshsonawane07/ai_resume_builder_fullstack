@@ -19,7 +19,7 @@ import { Loader2Icon, MoreVertical } from "lucide-react";
 import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { getFirestore, doc, deleteDoc } from "firebase/firestore";
+import { getFirestore, collection, query, where, orderBy, limit, doc, deleteDoc } from "firebase/firestore";
 import { UserContext } from "@/context/UserContext";
 
 const ResumeItem = ({ resume, refreshData }) => {
@@ -29,7 +29,7 @@ const ResumeItem = ({ resume, refreshData }) => {
   const [loading, setLoading] = useState(false);
 
   const onDelete = async () => {
-    if (!user?.uid) {
+    if (!user?.email) {
       console.error("User is not authenticated.");
       return;
     }
@@ -38,11 +38,13 @@ const ResumeItem = ({ resume, refreshData }) => {
 
     try {
       const db = getFirestore();
-      const resumeRef = doc(getFirestore(), "users", user.uid, "resumes", resume.id);
+      const resumesRef = collection(db, "usersByEmail", user.email, "resumes");
+      const resumeRef = doc(resumesRef, `resume-${resume.resumeId}`);
+
       await deleteDoc(resumeRef);
 
       toast.success("Resume Deleted!");
-      refreshData(); 
+      refreshData();
     } catch (error) {
       console.error("Error deleting resume:", error);
       toast.error("Failed to delete resume.");
@@ -54,7 +56,7 @@ const ResumeItem = ({ resume, refreshData }) => {
 
   return (
     <div>
-      <Link to={`/dashboard/${user.uid}/${resume.resumeId}/edit`}>
+      <Link to={`/dashboard/${user.email}/${resume.resumeId}/edit`}>
         <div
           className="p-14 bg-gradient-to-bl from-slate-300 to-slate-50 h-[280px] rounded-t-lg border-t-4"
           style={{
@@ -77,7 +79,7 @@ const ResumeItem = ({ resume, refreshData }) => {
           background: "rgb(76, 135, 255)",
         }}
       >
-        <h2 className="text-sm">{resume.id}</h2>
+        <h2 className="text-sm">Resume ID: {resume.resumeId}</h2>
 
         <DropdownMenu>
           <DropdownMenuTrigger>
@@ -85,17 +87,17 @@ const ResumeItem = ({ resume, refreshData }) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem
-              onClick={() => navigate(`/dashboard/${user.uid}/${resume.resumeId}/edit`)}
+              onClick={() => navigate(`/dashboard/${user.email}/${resume.resumeId}/edit`)}
             >
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => navigate(`/dashboard/${user.uid}/${resume.resumeId}/view`)}
+              onClick={() => navigate(`/dashboard/${user.email}/${resume.resumeId}/view`)}
             >
               View
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => navigate(`/dashboard/${user.uid}/${resume.resumeId}/view`)}
+              onClick={() => navigate(`/dashboard/${user.email}/${resume.resumeId}/view`)}
             >
               Download
             </DropdownMenuItem>

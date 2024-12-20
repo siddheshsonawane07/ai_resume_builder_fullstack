@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import FormSection from "../../component/FormSection";
 import ResumePreview from "../../component/ResumePreview";
 import { ResumeContext } from "@/context/ResumeContext";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, collection } from "firebase/firestore";
 import { app } from "@/utils/firebase_config";
 
 const EditResume = () => {
@@ -17,8 +17,8 @@ const EditResume = () => {
 
   const GetResumeInfo = async () => {
     try {
-      // const resumeRef = doc(db, "resumes", params.resumeId);
-      const resumeRef = doc(db, 'users', params.uid, 'resumes', params.resumeId);
+      // Reference to the document based on the new structure
+      const resumeRef = doc(db, "usersByEmail", params.email, "resumes", params.resumeId);
 
       const resumeDoc = await getDoc(resumeRef);
 

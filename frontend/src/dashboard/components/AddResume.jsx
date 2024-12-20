@@ -46,8 +46,10 @@ const AddResume = ({ refreshData }) => {
       const resumeDocRef = doc(resumesRef, `resume-${newResumeId}`);
       // await setDoc(resumeDocRef, { ...resumeData, resumeId: newResumeId });
       await setDoc(resumeDocRef, { resumeId: newResumeId });
-      navigate('/dashboard')
-      console.log("Resume created successfully!");
+      console.log("Resume created successfully!")
+      setLoading(false);
+      setOpenDialog(false);
+      navigate(`/dashboard/${user.email}/${newResumeId}/edit`)
     } catch (error) {
       console.error("Error creating resume:", error);
     } finally {

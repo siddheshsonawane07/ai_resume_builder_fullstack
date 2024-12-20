@@ -31,11 +31,11 @@ const router = createBrowserRouter([
             element: <Dashboard />,
           },
           {
-            path: "/dashboard/:uid/:resumeId/edit",
+            path: "/dashboard/:email/:resumeId/edit",
             element: <EditResume />,
           },
           {
-            path: "/dashboard/:resumeId/view",
+            path: "/dashboard/:email/:resumeId/view",
             element: <ResumeEditor />,
           },
         ],
