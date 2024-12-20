@@ -77,7 +77,7 @@ const FormSection = () => {
           enableNext={(v) => setEnableNext(v)}
         />
       ) : activeIndex === 6 ? (
-        <Navigate to={`/my-resume/${email}/${resumeId}/view`} />
+        <Navigate to={`/dashboard/${email}/${resumeId}/view`} />
       ) : null}
     </div>
   );

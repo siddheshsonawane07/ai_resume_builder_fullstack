@@ -22,7 +22,6 @@ const Skills = ({ resumeId, email, enableNext }) => {
   const [loading, setLoading] = useState(false);
   const [shouldUpdateContext, setShouldUpdateContext] = useState(false);
 
-  // Update context only when we explicitly want to
   useEffect(() => {
     if (shouldUpdateContext) {
       setResumeInfo(prev => ({
@@ -63,9 +62,7 @@ const Skills = ({ resumeId, email, enableNext }) => {
         `usersByEmail/${email}/resumes`,
         `resume-${resumeId}`
       );
-      
       await setDoc(resumeRef, { skills: skillsList }, { merge: true });
-      
       setLoading(false);
       toast.success("Skills updated successfully!");
       enableNext(true);

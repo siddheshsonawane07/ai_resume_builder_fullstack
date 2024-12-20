@@ -6,9 +6,9 @@ import Home from "./home/index.jsx";
 import Dashboard from "./dashboard/index.jsx";
 import LoginSignup from "./auth/sign-in/index.jsx";
 import ProtectedRoute from "./utils/ProtectedRoute.jsx";
-import ResumeEditor from "./dashboard/components/ResumeItem.jsx"; 
-import "./index.css";
+import ViewResume from "./my-resume/[resumeId]/view/index.jsx";
 import EditResume from "./dashboard/resume/[resumeId]/edit/index.jsx";
+import "./index.css";
 
 const router = createBrowserRouter([
   {
@@ -36,7 +36,7 @@ const router = createBrowserRouter([
           },
           {
             path: "/dashboard/:email/:resumeId/view",
-            element: <ResumeEditor />,
+            element: <ViewResume />,
           },
         ],
       },
