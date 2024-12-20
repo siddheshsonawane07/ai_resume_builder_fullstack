@@ -1,6 +1,3 @@
-/* eslint-disable react/prop-types */
-
-// eslint-disable-next-line no-unused-vars
 const EducationalPreview = ({ resumeInfo }) => {
   return (
     <div className="my-6">
