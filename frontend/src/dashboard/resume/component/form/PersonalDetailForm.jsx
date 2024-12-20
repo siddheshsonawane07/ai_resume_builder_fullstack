@@ -27,7 +27,11 @@ const PersonalDetailForm = ({ resumeId, email, enableNext }) => {
     setLoading(true);
 
     try {
-      const resumeRef = doc(db, `usersByEmail/${email}/resumes`, `resume-${resumeId}`);
+      const resumeRef = doc(
+        db,
+        `usersByEmail/${email}/resumes`,
+        `resume-${resumeId}`
+      );
       await setDoc(resumeRef, formData, { merge: true });
       toast.success("Details Updated");
       enableNext(true);

@@ -23,19 +23,19 @@ const ExperienceForm = ({ resumeId, email, enableNext }) => {
   const { resumeInfo, setResumeInfo } = useContext(ResumeContext);
   const [loading, setLoading] = useState(false);
 
-  // Update experience list from context when it changes
   useEffect(() => {
     if (resumeInfo?.experience?.length > 0) {
       setExperiencList(resumeInfo.experience);
     }
-  }, [resumeInfo]);
+  }, []); 
 
-  // Update context when experiencList changes
   useEffect(() => {
-    setResumeInfo({
-      ...resumeInfo,
-      experience: experiencList,
-    });
+    if (JSON.stringify(resumeInfo?.experience) !== JSON.stringify(experiencList)) {
+      setResumeInfo((prevInfo) => ({
+        ...prevInfo,
+        experience: experiencList,
+      }));
+    }
   }, [experiencList, setResumeInfo]);
 
   const handleChange = (index, event) => {
@@ -77,7 +77,11 @@ const ExperienceForm = ({ resumeId, email, enableNext }) => {
 
     try {
       const db = getFirestore(app);
-      const resumeRef = doc(db, `usersByEmail/${email}/resumes`, `resume-${resumeId}`);
+      const resumeRef = doc(
+        db,
+        `usersByEmail/${email}/resumes`,
+        `resume-${resumeId}`
+      );
       const data = { experience: experiencList };
 
       await setDoc(resumeRef, data, { merge: true });
