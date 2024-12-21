@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ResumeContext } from "@/context/ResumeContext";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -10,16 +10,53 @@ import { app } from "@/utils/firebase_config";
 
 const PersonalDetailForm = ({ resumeId, email, enableNext }) => {
   const { resumeInfo, setResumeInfo } = useContext(ResumeContext);
-  const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const db = getFirestore(app);
 
+  // Initialize formData with existing values from resumeInfo
+  const [formData, setFormData] = useState({
+    personalDetail: {
+      firstName: resumeInfo?.personalDetail?.firstName || "",
+      lastName: resumeInfo?.personalDetail?.lastName || "",
+      jobTitle: resumeInfo?.personalDetail?.jobTitle || "",
+      address: resumeInfo?.personalDetail?.address || "",
+      phone: resumeInfo?.personalDetail?.phone || "",
+      email: resumeInfo?.personalDetail?.email || ""
+    }
+  });
+
+  // Update formData when resumeInfo changes (e.g., when loaded from Firestore)
+  useEffect(() => {
+    if (resumeInfo?.personalDetail) {
+      setFormData({
+        personalDetail: {
+          ...resumeInfo.personalDetail
+        }
+      });
+    }
+  }, [resumeInfo]);
+
   const handleInputChange = (e) => {
     enableNext(false);
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    setResumeInfo({ ...resumeInfo, [name]: value });
+    
+    // Update both formData and resumeInfo with nested structure
+    setFormData(prev => ({
+      ...prev,
+      personalDetail: {
+        ...prev.personalDetail,
+        [name]: value
+      }
+    }));
+
+    setResumeInfo(prev => ({
+      ...prev,
+      personalDetail: {
+        ...(prev?.personalDetail || {}),
+        [name]: value
+      }
+    }));
   };
 
   const onSave = async (e) => {
@@ -32,10 +69,10 @@ const PersonalDetailForm = ({ resumeId, email, enableNext }) => {
         `usersByEmail/${email}/resumes`,
         `resume-${resumeId}`
       );
+      
       await setDoc(resumeRef, formData, { merge: true });
       toast.success("Details Updated");
       enableNext(true);
-      // navigate(`/dashboard/${email}/resume/${params?.resumeId}/edit`);
     } catch (error) {
       console.error("Error updating document: ", error);
       toast.error("Failed to update details");
@@ -55,7 +92,7 @@ const PersonalDetailForm = ({ resumeId, email, enableNext }) => {
             <label className="text-sm">First Name</label>
             <Input
               name="firstName"
-              defaultValue={resumeInfo?.firstName}
+              value={formData.personalDetail.firstName}
               required
               onChange={handleInputChange}
             />
@@ -64,7 +101,7 @@ const PersonalDetailForm = ({ resumeId, email, enableNext }) => {
             <label className="text-sm">Last Name</label>
             <Input
               name="lastName"
-              defaultValue={resumeInfo?.lastName}
+              value={formData.personalDetail.lastName}
               required
               onChange={handleInputChange}
             />
@@ -73,7 +110,7 @@ const PersonalDetailForm = ({ resumeId, email, enableNext }) => {
             <label className="text-sm">Job Title</label>
             <Input
               name="jobTitle"
-              defaultValue={resumeInfo?.jobTitle}
+              value={formData.personalDetail.jobTitle}
               required
               onChange={handleInputChange}
             />
@@ -82,7 +119,7 @@ const PersonalDetailForm = ({ resumeId, email, enableNext }) => {
             <label className="text-sm">Address</label>
             <Input
               name="address"
-              defaultValue={resumeInfo?.address}
+              value={formData.personalDetail.address}
               required
               onChange={handleInputChange}
             />
@@ -91,7 +128,7 @@ const PersonalDetailForm = ({ resumeId, email, enableNext }) => {
             <label className="text-sm">Phone</label>
             <Input
               name="phone"
-              defaultValue={resumeInfo?.phone}
+              value={formData.personalDetail.phone}
               required
               onChange={handleInputChange}
             />
@@ -100,7 +137,7 @@ const PersonalDetailForm = ({ resumeId, email, enableNext }) => {
             <label className="text-sm">Email</label>
             <Input
               name="email"
-              defaultValue={resumeInfo?.email}
+              value={formData.personalDetail.email}
               required
               onChange={handleInputChange}
             />

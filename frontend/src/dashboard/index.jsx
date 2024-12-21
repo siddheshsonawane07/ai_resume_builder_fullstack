@@ -42,7 +42,7 @@ const Dashboard = () => {
       <h1 className="font-bold text-3xl">My Resume</h1>
       <p>Start Creating AI Resume for your next job role</p>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 mt-10 gap-5">
-        <AddResume refreshData={getResumesList} />
+        <AddResume />
         {loading ? (
           <div>Loading...</div>
         ) : resumeList.length > 0 ? (

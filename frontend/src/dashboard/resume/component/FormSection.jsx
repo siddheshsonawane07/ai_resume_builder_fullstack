@@ -8,7 +8,6 @@ import ExperienceForm from "./form/ExperienceForm";
 import Education from "./form/Education";
 import Skills from "./form/Skills";
 import { Link, Navigate, useParams } from "react-router-dom";
-import ThemeColor from "./ThemeColor";
 
 const FormSection = () => {
   const [activeIndex, setActiveIndex] = useState(1);
@@ -24,7 +23,6 @@ const FormSection = () => {
               <Home />
             </Button>
           </Link>
-          <ThemeColor />
         </div>
         <div className="flex gap-2">
           {activeIndex > 1 && (

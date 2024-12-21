@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "@/context/UserContext";
 import { getFirestore, doc, setDoc,collection,query, orderBy, limit,getDocs } from "firebase/firestore";
 
-const AddResume = ({ refreshData }) => {
+const AddResume = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [resumeTitle, setResumeTitle] = useState("");
   const [loading, setLoading] = useState(false);

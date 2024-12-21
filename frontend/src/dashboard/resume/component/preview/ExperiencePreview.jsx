@@ -1,32 +1,40 @@
 const ExperiencePreview = ({ resumeInfo }) => {
+  const experience = resumeInfo?.experience || [];
+  console.log("Experience data in Preview:", resumeInfo?.experience);
+
+  if (experience.length === 0) {
+    return (
+      <div className="text-center text-gray-500 text-sm font-medium py-4">
+        No job experience data added.
+      </div>
+    );
+  }
+
   return (
     <div className="my-6">
-      <h2
-        className="text-center font-bold text-sm mb-2"
-        style={{ color: resumeInfo?.themeColor }}
-      >
+      <h2 className="text-center font-bold text-sm mb-2">
         Professional Experience
       </h2>
-      <hr style={{ borderColor: resumeInfo?.themeColor }} />
-      {resumeInfo?.experience?.map((experience, index) => (
+      <hr />
+      {experience.map((exp, index) => (
         <div key={index} className="my-5">
-          <h2
-            className="text-sm font-bold"
-            style={{ color: resumeInfo?.themeColor }}
-          >
-            {experience?.jobTitle}
+          <h2 className="text-sm font-bold">
+            {exp?.title || "Position title not provided"}
           </h2>
           <h2 className="text-xs flex justify-between">
-            {experience?.companyName}, {experience?.city}, {experience?.state}
+            {(exp?.companyName || "Company not specified") +
+              (exp?.city ? `, ${exp.city}` : "") +
+              (exp?.state ? `, ${exp.state}` : "")}
             <span>
-              {experience?.startDate} {" "}To{" "}
-              {experience?.currentlyWorking ? "Present" : experience?.endDate}
+              {(exp?.duration?.startDate || "Start date not provided") + " To " + 
+                (exp?.duration?.endDate || "End date not provided")}
             </span>
           </h2>
-          {/* Use dangerouslySetInnerHTML for Firestore HTML-formatted summaries */}
           <div
             className="text-xs my-2 text-justify"
-            dangerouslySetInnerHTML={{ __html: experience?.workSummary }}
+            dangerouslySetInnerHTML={{
+              __html: exp?.workSummery || "No work summary provided.",
+            }}
           />
         </div>
       ))}

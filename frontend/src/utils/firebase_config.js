@@ -10,7 +10,7 @@ const firebaseConfig = {
   projectId: "clevercv-d6428",
   storageBucket: "clevercv-d6428.firebasestorage.app",
   messagingSenderId: "860320432541",
-  appId: "1:860320432541:web:7aa616dde31fb3eea4ef74"
+  appId: "1:860320432541:web:c6f56ba0b392e2d1a4ef74"
 };
 
 const app = initializeApp(firebaseConfig);

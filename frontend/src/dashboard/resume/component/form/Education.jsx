@@ -186,4 +186,4 @@ const Education = ({ resumeId, email, enableNext }) => {
   );
 };
 
-export default Education;
+export default Education; 

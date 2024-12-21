@@ -27,7 +27,7 @@ const ExperienceForm = ({ resumeId, email, enableNext }) => {
     if (resumeInfo?.experience?.length > 0) {
       setExperiencList(resumeInfo.experience);
     }
-  }, []); 
+  }, []);
 
   useEffect(() => {
     if (JSON.stringify(resumeInfo?.experience) !== JSON.stringify(experiencList)) {
@@ -74,18 +74,41 @@ const ExperienceForm = ({ resumeId, email, enableNext }) => {
 
   const onSave = async () => {
     setLoading(true);
-
+  
     try {
       const db = getFirestore(app);
-      const resumeRef = doc(
-        db,
-        `usersByEmail/${email}/resumes`,
-        `resume-${resumeId}`
-      );
-      const data = { experience: experiencList };
-
+      const resumeRef = doc(db, `usersByEmail/${email}/resumes`, `resume-${resumeId}`);
+      const data = {
+        experience: experiencList.map((item, index) => ({
+          id: `exp-${index + 1}`,
+          title: item.title || "Position title not provided",
+          companyName: item.companyName || "Company not specified",
+          location: {
+            city: item.city || "City not specified",
+            state: item.state || "State not specified",
+          },
+          duration: {
+            startDate: item.startDate || "Start date not provided",
+            endDate: item.endDate || "End date not provided",
+          },
+          workSummery: item.workSummery || "No work summary provided.",
+        })),
+      };
+  
+      // Save to Firestore
       await setDoc(resumeRef, data, { merge: true });
-
+  
+      // Update Context
+      setResumeInfo((prev) => ({
+        ...prev,
+        experience: data.experience,
+      }));
+  
+      console.log("Updated context after save:", {
+        ...resumeInfo,
+        experience: data.experience,
+      });
+  
       setLoading(false);
       toast.success("Details updated!");
       enableNext(true);
@@ -95,6 +118,7 @@ const ExperienceForm = ({ resumeId, email, enableNext }) => {
       toast.error("Error updating details!");
     }
   };
+  
 
   return (
     <div>

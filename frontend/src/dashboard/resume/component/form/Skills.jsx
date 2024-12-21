@@ -11,12 +11,12 @@ import { toast } from "sonner";
 
 const formField = {
   name: "",
-  rating: 0
+  rating: 0,
 };
 
 const Skills = ({ resumeId, email, enableNext }) => {
   const { resumeInfo, setResumeInfo } = useContext(ResumeContext);
-  const [skillsList, setSkillsList] = useState(() => 
+  const [skillsList, setSkillsList] = useState(() =>
     resumeInfo?.skills?.length > 0 ? resumeInfo.skills : [formField]
   );
   const [loading, setLoading] = useState(false);
@@ -24,16 +24,16 @@ const Skills = ({ resumeId, email, enableNext }) => {
 
   useEffect(() => {
     if (shouldUpdateContext) {
-      setResumeInfo(prev => ({
+      setResumeInfo((prev) => ({
         ...prev,
-        skills: skillsList
+        skills: skillsList,
       }));
       setShouldUpdateContext(false);
     }
   }, [shouldUpdateContext, setResumeInfo, skillsList]);
 
   const handleChange = useCallback((index, name, value) => {
-    setSkillsList(prev => {
+    setSkillsList((prev) => {
       const newEntries = [...prev];
       newEntries[index][name] = value;
       return newEntries;
@@ -42,13 +42,13 @@ const Skills = ({ resumeId, email, enableNext }) => {
   }, []);
 
   const addNewSkill = useCallback(() => {
-    setSkillsList(prev => [...prev, { ...formField }]);
+    setSkillsList((prev) => [...prev, { ...formField }]);
     setShouldUpdateContext(true);
   }, []);
 
   const removeSkill = useCallback(() => {
     if (skillsList.length > 1) {
-      setSkillsList(prev => prev.slice(0, -1));
+      setSkillsList((prev) => prev.slice(0, -1));
       setShouldUpdateContext(true);
     }
   }, [skillsList.length]);
@@ -62,7 +62,16 @@ const Skills = ({ resumeId, email, enableNext }) => {
         `usersByEmail/${email}/resumes`,
         `resume-${resumeId}`
       );
-      await setDoc(resumeRef, { skills: skillsList }, { merge: true });
+      await setDoc(
+        resumeRef,
+        {
+          skills: skillsList.map((skill) => ({
+            name: skill.name || "",
+            rating: skill.rating || 0,
+          })),
+        },
+        { merge: true }
+      );
       setLoading(false);
       toast.success("Skills updated successfully!");
       enableNext(true);
@@ -90,7 +99,9 @@ const Skills = ({ resumeId, email, enableNext }) => {
                 <Input
                   value={item.name}
                   className="w-full"
-                  onChange={(e) => handleChange(index, "name", e.target.value)}
+                  onChange={(e) =>
+                    handleChange(index, "name", e.target.value)
+                  }
                 />
               </div>
               <div className="flex items-center">

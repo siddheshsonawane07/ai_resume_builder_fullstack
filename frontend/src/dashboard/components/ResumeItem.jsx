@@ -56,7 +56,7 @@ const ResumeItem = ({ resume, refreshData }) => {
 
   return (
     <div>
-      <Link to={`/dashboard/${user.email}/${resume.resumeId}/edit`}>
+      <Link to={`/dashboard/${user.email}/${resume.resumeId}/view`}>
         <div
           className="p-14 bg-gradient-to-bl from-slate-300 to-slate-50 h-[280px] rounded-t-lg border-t-4"
           style={{
